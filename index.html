@@ -83,7 +83,7 @@
                     <input type="number" class="form-control" id="tinggi" name="tinggi" required>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="manpower"><i class="fas fa-users"></i> Manpower per Unit:</label>
+                    <label for="manpower"><i class="fas fa-users"></i> Team per Unit:</label>
                     <input type="number" class="form-control" id="manpower" name="manpower" required>
                 </div>
             </div>
@@ -93,7 +93,7 @@
                     <input type="number" class="form-control" id="totalUnit" name="totalUnit" required>
                 </div>
                 <div class="form-group col-md-6">
-                    <label for="target"><i class="fas fa-calendar-alt"></i> Target Hari:</label>
+                    <label for="target"><i class="fas fa-calendar-alt"></i> Target Penyelesaian:</label>
                     <input type="number" class="form-control" id="target" name="target" required>
                 </div>
             </div>
@@ -138,40 +138,41 @@
 
     <script>
         function hitungVolumeDanDurasi() {
-            const panjang = parseFloat(document.getElementById('panjang').value);
-            const lebar = parseFloat(document.getElementById('lebar').value);
-            const tinggi = parseFloat(document.getElementById('tinggi').value);
-            const manpower = parseFloat(document.getElementById('manpower').value);
-            const totalUnit = parseFloat(document.getElementById('totalUnit').value);
-            const target = parseFloat(document.getElementById('target').value);
+    const panjang = parseFloat(document.getElementById('panjang').value);
+    const lebar = parseFloat(document.getElementById('lebar').value);
+    const tinggi = parseFloat(document.getElementById('tinggi').value);
+    const manpower = parseFloat(document.getElementById('manpower').value);
+    const totalUnit = parseFloat(document.getElementById('totalUnit').value);
+    const target = parseFloat(document.getElementById('target').value);
 
-            // Validasi input
-            if (panjang <= 0 || lebar <= 0 || tinggi <= 0 || manpower <= 0 || totalUnit <= 0 || target <= 0) {
-                alert("Semua input harus bernilai positif.");
-                return;
-            }
+    // Validasi input
+    if (panjang <= 0 || lebar <= 0 || tinggi <= 0 || manpower <= 0 || totalUnit <= 0 || target <= 0) {
+        alert("Semua input harus bernilai positif.");
+        return;
+    }
 
-            // Menghitung volume
-            const volume = panjang * lebar * tinggi; // Volume (Panjang * Lebar * Tinggi)
+    // Menghitung volume
+    const volume = (panjang * lebar * tinggi).toFixed(2);
 
-            // Menghitung durasi
-            const durasi = (volume / manpower).toFixed(2); // Durasi (Volume / Manpower)
+    // Menghitung durasi
+    const durasi = Math.ceil(volume / manpower); // Durasi (Volume / Manpower) dibulatkan ke atas
 
-            // Menghitung total waktu
-            const totalWaktu = (totalUnit * durasi).toFixed(2); // Total waktu (Total Unit * Durasi)
+    // Menghitung total waktu
+    const totalWaktu = Math.ceil(totalUnit * durasi); // Total waktu (Total Unit * Durasi) dibulatkan ke atas
 
-            // Menghitung kebutuhan tim per hari
-            const kebutuhanTimPerHari = (totalWaktu / target).toFixed(2); // Kebutuhan Tim Per Hari
+    // Menghitung kebutuhan tim per hari
+    const kebutuhanTimPerHari = Math.ceil(totalWaktu / target); // Kebutuhan Tim Per Hari dibulatkan ke atas
 
-            // Menampilkan hasil di tabel
-            document.getElementById('volumeResult').innerText = volume + ' m³';
-            document.getElementById('durasiResult').innerText = durasi + ' hari';
-            document.getElementById('totalWaktuResult').innerText = totalWaktu + ' hari';
-            document.getElementById('kebutuhanTimResult').innerText = kebutuhanTimPerHari + ' orang';
+    // Menampilkan hasil di tabel
+    document.getElementById('volumeResult').innerText = volume + ' m³';
+    document.getElementById('durasiResult').innerText = durasi + ' hari';
+    document.getElementById('totalWaktuResult').innerText = totalWaktu + ' hari';
+    document.getElementById('kebutuhanTimResult').innerText = kebutuhanTimPerHari + ' Team';
 
-            // Menampilkan tabel hasil
-            document.getElementById('resultTable').style.display = 'table';
-        }
+    // Menampilkan tabel hasil
+    document.getElementById('resultTable').style.display = 'table';
+}
+
     </script>
 </body>
 </html>
