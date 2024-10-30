@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitung Volume, Durasi, dan Kebutuhan Tim</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+                body {
+            background-color: #f4f4f4;
+            background-image: url('background.jpg'); /* Ganti dengan URL gambar latar belakang */
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .container {
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            color: #333;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            animation: fadeIn 0.5s;
+        }
+        table {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #007bff; /* Warna tombol */
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3; /* Warna saat hover */
+            border-color: #0056b3;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-light" style="background-color: rgba(255, 255, 255, 0);">
+    <a class="navbar-brand" href="#">
+        <img src="logo.jpg" width="200" height="100" class="d-inline-block align-top" alt="Logo">
+    </a>
+</nav>
+
+
+    <div class="container">
+        <h2>Calculator Projek</h2>
+        <p class="text-center">Masukkan dimensi dan informasi proyek Anda di bawah ini untuk menghitung volume, durasi, dan kebutuhan tim.</p>
+        <form id="volumeForm">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="panjang"><i class="fas fa-arrows-alt"></i> Panjang (m):</label>
+                    <input type="number" class="form-control" id="panjang" name="panjang" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="lebar"><i class="fas fa-arrows-alt"></i> Lebar (m):</label>
+                    <input type="number" class="form-control" id="lebar" name="lebar" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="tinggi"><i class="fas fa-arrows-alt"></i> Tinggi (m):</label>
+                    <input type="number" class="form-control" id="tinggi" name="tinggi" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="manpower"><i class="fas fa-users"></i> Manpower per Unit:</label>
+                    <input type="number" class="form-control" id="manpower" name="manpower" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="totalUnit"><i class="fas fa-th"></i> Total Unit:</label>
+                    <input type="number" class="form-control" id="totalUnit" name="totalUnit" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="target"><i class="fas fa-calendar-alt"></i> Target Hari:</label>
+                    <input type="number" class="form-control" id="target" name="target" required>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-block" onclick="hitungVolumeDanDurasi()">Hitung</button>
+        </form>
+
+        <div class="result" id="result"></div>
+
+        <table class="table table-bordered" id="resultTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Hasil</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Volume (m³)</td>
+                    <td id="volumeResult"></td>
+                </tr>
+                <tr>
+                    <td>Durasi (hari)</td>
+                    <td id="durasiResult"></td>
+                </tr>
+                <tr>
+                    <td>Total Waktu (hari)</td>
+                    <td id="totalWaktuResult"></td>
+                </tr>
+                <tr>
+                    <td>Kebutuhan Tim per Hari</td>
+                    <td id="kebutuhanTimResult"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.11/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function hitungVolumeDanDurasi() {
+            const panjang = parseFloat(document.getElementById('panjang').value);
+            const lebar = parseFloat(document.getElementById('lebar').value);
+            const tinggi = parseFloat(document.getElementById('tinggi').value);
+            const manpower = parseFloat(document.getElementById('manpower').value);
+            const totalUnit = parseFloat(document.getElementById('totalUnit').value);
+            const target = parseFloat(document.getElementById('target').value);
+
+            // Validasi input
+            if (panjang <= 0 || lebar <= 0 || tinggi <= 0 || manpower <= 0 || totalUnit <= 0 || target <= 0) {
+                alert("Semua input harus bernilai positif.");
+                return;
+            }
+
+            // Menghitung volume
+            const volume = panjang * lebar * tinggi; // Volume (Panjang * Lebar * Tinggi)
+
+            // Menghitung durasi
+            const durasi = (volume / manpower).toFixed(2); // Durasi (Volume / Manpower)
+
+            // Menghitung total waktu
+            const totalWaktu = (totalUnit * durasi).toFixed(2); // Total waktu (Total Unit * Durasi)
+
+            // Menghitung kebutuhan tim per hari
+            const kebutuhanTimPerHari = (totalWaktu / target).toFixed(2); // Kebutuhan Tim Per Hari
+
+            // Menampilkan hasil di tabel
+            document.getElementById('volumeResult').innerText = volume + ' m³';
+            document.getElementById('durasiResult').innerText = durasi + ' hari';
+            document.getElementById('totalWaktuResult').innerText = totalWaktu + ' hari';
+            document.getElementById('kebutuhanTimResult').innerText = kebutuhanTimPerHari + ' orang';
+
+            // Menampilkan tabel hasil
+            document.getElementById('resultTable').style.display = 'table';
+        }
+    </script>
+</body>
+</html>
