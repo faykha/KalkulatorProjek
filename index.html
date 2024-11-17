@@ -47,8 +47,9 @@
 </head>
 <body>
     <div class="logoimg">
-        <img src="logo.png" style="width: 250px; height: auto;">
+        <img src="logo.png" style="width: 250px; height: auto; position: fixed; top: 10px; right: 10px;">
     </div>
+    
     <div class="container">
         <h2>Calculator Projek</h2>
         <p class="text-center">Tools untuk menghitung kebutuhan team perhari sesuai target dan kebutuhan team anda.</p>
@@ -58,9 +59,12 @@
             </div>
             <button type="button" class="btn btn-outline-success" onclick="hitungSemua()">Success</button>
             <button type="button" class="btn btn-outline-primary" onclick="tambahForm()">Tambah pekerjaan</button>
+            <button type="button" class="btn btn-outline-danger" onclick="refreshPage()">Refresh</button>
         </form>
 
         <div id="resultContainer"></div>
+        <div id="summaryContainer" class="mt-4"></div>
+
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -69,6 +73,28 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+
+        function refreshPage() {
+            // Hapus semua form yang ada
+            document.getElementById('formContainer').innerHTML = '';
+
+            // Reset result dan summary container
+            document.getElementById('resultContainer').innerHTML = '';
+            document.getElementById('summaryContainer').innerHTML = '';
+
+            // Reset form count
+            formCount = 0;
+
+        }
+
+
+        function hapusCard(index) {
+            const card = document.getElementById(`result-card-${index}`);
+            if (card) {
+                card.remove();
+            }
+        }
+
         let formCount = 0; // Untuk melacak jumlah form
 
         function tambahForm() {
@@ -124,89 +150,123 @@
         }
 
         function hitungSemua() {
-            const resultContainer = document.getElementById('resultContainer');
-            resultContainer.innerHTML = ''; // Bersihkan hasil sebelumnya
+    const resultContainer = document.getElementById('resultContainer');
+    const summaryContainer = document.getElementById('summaryContainer');
+    resultContainer.innerHTML = ''; // Bersihkan hasil sebelumnya
+    summaryContainer.innerHTML = ''; // Bersihkan summary sebelumnya
 
-            for (let i = 1; i <= formCount; i++) {
-                const jenisPekerjaan = document.getElementById(`jenisPekerjaan-${i}`).value;
-                const panjang = parseFloat(document.getElementById(`panjang-${i}`).value);
-                const lebar = parseFloat(document.getElementById(`lebar-${i}`).value);
-                const tinggi = parseFloat(document.getElementById(`tinggi-${i}`).value);
-                const manpower = parseFloat(document.getElementById(`manpower-${i}`).value);
-                const totalUnit = parseFloat(document.getElementById(`totalUnit-${i}`).value);
-                const target = parseFloat(document.getElementById(`target-${i}`).value);
+    let totalKebutuhanTim = 0;
+    let totalUnitSemuaPekerjaan = 0;
+    let summaryDetails = [];
 
-                // Validasi input
-                if (panjang <= 0 || lebar <= 0 || tinggi <= 0 || manpower <= 0 || totalUnit <= 0 || target <= 0) {
-                    alert(`Form ${i}: Mohon masukkan angka positif untuk semua nilai.`);
-                    continue;
-                }
+    for (let i = 1; i <= formCount; i++) {
+        const jenisPekerjaan = document.getElementById(`jenisPekerjaan-${i}`).value;
+        const panjang = parseFloat(document.getElementById(`panjang-${i}`).value);
+        const lebar = parseFloat(document.getElementById(`lebar-${i}`).value);
+        const tinggi = parseFloat(document.getElementById(`tinggi-${i}`).value);
+        const manpower = parseFloat(document.getElementById(`manpower-${i}`).value);
+        const totalUnit = parseFloat(document.getElementById(`totalUnit-${i}`).value);
+        const target = parseFloat(document.getElementById(`target-${i}`).value);
 
-                let volume = 0, durasi = 0, kebutuhanTimPerHari = 0;
-
-                // Logika perhitungan berdasarkan jenis pekerjaan
-                switch (jenisPekerjaan) {
-                    case "Laminate Floor":
-                        volume = (panjang * lebar).toFixed(2); // Volume per unit
-                        durasi = Math.ceil(volume / (manpower * 7)); // Durasi per unit
-                        durasiNormal = Math.ceil(totalUnit * durasi); // Total durasi untuk semua unit
-                        kebutuhanTimPerHari = Math.ceil(durasiNormal / target); // Tim per hari
-                        totalVolume = Math.ceil(volume * totalUnit).toFixed(2); // Total volume semua unit
-                        break;
-
-                    case "Kitchen":
-                        volume = (panjang - lebar + tinggi).toFixed(2);
-                        durasi = Math.ceil(volume / (manpower * 1.5));
-                        durasiNormal = Math.ceil(totalUnit * durasi);
-                        kebutuhanTimPerHari = Math.ceil(durasiNormal / target);
-                        totalVolume = Math.ceil(volume * totalUnit).toFixed(2);
-                        break;
-
-                    case "Wardrobe":
-                        volume = (panjang * tinggi * lebar).toFixed(2);
-                        durasi = Math.ceil(volume / (manpower * 1.5));
-                        durasiNormal = Math.ceil(totalUnit * durasi);
-                        kebutuhanTimPerHari = Math.ceil(durasiNormal / target);
-                        totalVolume = Math.ceil(volume * totalUnit).toFixed(2);
-                        break;
-
-                    case "Entertainment":
-                        volume = ((panjang - lebar + tinggi) * 1.2).toFixed(2);
-                        durasi = Math.ceil(volume / (manpower * 1.5));
-                        durasiNormal = Math.ceil(totalUnit * durasi);
-                        kebutuhanTimPerHari = Math.ceil(durasiNormal / target);
-                        totalVolume = Math.ceil(volume * totalUnit).toFixed(2);
-                        break;
-
-                    default:
-                        alert(`Form ${i}: Jenis pekerjaan tidak valid!`);
-                        continue;
-                }
-
-
-                // Tambahkan hasil ke dalam container
-                resultContainer.innerHTML += `
-                    <div class="card mb-3 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary">Hasil Pekerjaan ${i}</h5>
-                            <p class="card-text"><i class="fas fa-tools"></i> <strong>Jenis Pekerjaan:</strong> ${jenisPekerjaan}</p>
-                            <p class="card-text ${volume > 100 ? 'text-danger' : 'text-success'}">
-                                <i class="fas fa-cube"></i> <strong>Volume per Unit:</strong> ${volume} m³
-                            </p>
-                            <p class="card-text text-info">
-                                <i class="fas fa-layer-group"></i> <strong>Total Volume:</strong> ${totalVolume} m³
-                            </p>
-                            <p class="card-text ${target > 10 ? 'text-warning' : 'text-success'}">
-                                <i class="fas fa-calendar-alt"></i> <strong>Target Penyelesaian:</strong> ${target} Hari
-                            </p>
-                            <p class="card-text"><i class="fas fa-users"></i> <strong>Kebutuhan Tim per Hari:</strong> ${kebutuhanTimPerHari} Tim</p>
-                            
-                        </div>
-                    </div>
-                `;
-
-            }
+        // Validasi input
+        if (panjang <= 0 || lebar <= 0 || tinggi <= 0 || manpower <= 0 || totalUnit <= 0 || target <= 0) {
+            alert(`Form ${i}: Mohon masukkan angka positif untuk semua nilai.`);
+            continue;
         }
+
+        let volume = 0, durasi = 0, kebutuhanTimPerHari = 0;
+
+        // Logika perhitungan berdasarkan jenis pekerjaan
+        switch (jenisPekerjaan) {
+            case "Laminate Floor":
+                volume = (panjang * lebar).toFixed(2); // Volume per unit
+                durasi = Math.ceil(volume / (manpower * 7)); // Durasi per unit
+                durasiNormal = Math.ceil(totalUnit * durasi); // Total durasi untuk semua unit
+                kebutuhanTimPerHari = Math.ceil(durasiNormal / target); // Tim per hari
+                totalVolume = Math.ceil(volume * totalUnit).toFixed(2); // Total volume semua unit
+                break;
+
+            case "Kitchen":
+                volume = (panjang - lebar + tinggi).toFixed(2);
+                durasi = Math.ceil(volume / (manpower * 1.5));
+                durasiNormal = Math.ceil(totalUnit * durasi);
+                kebutuhanTimPerHari = Math.ceil(durasiNormal / target);
+                totalVolume = Math.ceil(volume * totalUnit).toFixed(2);
+                break;
+
+            case "Wardrobe":
+                volume = (panjang * tinggi * lebar).toFixed(2);
+                durasi = Math.ceil(volume / (manpower * 1.5));
+                durasiNormal = Math.ceil(totalUnit * durasi);
+                kebutuhanTimPerHari = Math.ceil(durasiNormal / target);
+                totalVolume = Math.ceil(volume * totalUnit).toFixed(2);
+                break;
+
+            case "Entertainment":
+                volume = ((panjang - lebar + tinggi) * 1.2).toFixed(2);
+                durasi = Math.ceil(volume / (manpower * 1.5));
+                durasiNormal = Math.ceil(totalUnit * durasi);
+                kebutuhanTimPerHari = Math.ceil(durasiNormal / target);
+                totalVolume = Math.ceil(volume * totalUnit).toFixed(2);
+                break;
+
+            default:
+                alert(`Form ${i}: Jenis pekerjaan tidak valid!`);
+                continue;
+        }
+
+        // Tambahkan hasil ke dalam container
+        resultContainer.innerHTML += `
+            <div class="card mb-3 shadow-sm" id="result-card-${i}">
+                <div class="card-body">
+                    <button type="button" class="close" aria-label="Close" style="float: right;" onclick="hapusCard(${i})">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h5 class="card-title text-primary">Hasil Pekerjaan ${i}</h5>
+                    <p class="card-text"><i class="fas fa-tools"></i> <strong>Jenis Pekerjaan:</strong> ${jenisPekerjaan}</p>
+                    <p class="card-text ${volume > 100 ? 'text-danger' : 'text-success'}">
+                        <i class="fas fa-cube"></i> <strong>Volume per Unit:</strong> ${volume} m³
+                    </p>
+                    <p class="card-text text-info">
+                        <i class="fas fa-layer-group"></i> <strong>Total Volume:</strong> ${totalVolume} m³
+                    </p>
+                    <p class="card-text ${target > 10 ? 'text-warning' : 'text-success'}">
+                        <i class="fas fa-calendar-alt"></i> <strong>Target Penyelesaian:</strong> ${target} Hari
+                    </p>
+                    <p class="card-text"><i class="fas fa-users"></i> <strong>Kebutuhan Tim per Hari:</strong> ${kebutuhanTimPerHari} Tim</p>
+                </div>
+            </div>
+        `;
+
+        // Tambahkan data ke summary
+        totalKebutuhanTim += kebutuhanTimPerHari;
+        totalUnitSemuaPekerjaan += totalUnit;
+        summaryDetails.push({ jenisPekerjaan, totalUnit, target });
+    }
+
+    // Tampilkan summary
+    summaryContainer.innerHTML = `
+        <div class="card mt-4">
+            <div class="card-body">
+                <h4 class="card-title text-center text-primary">Summary Total</h4>
+                <p class="card-text"><i class="fas fa-users"></i> <strong>Total Kebutuhan Tim:</strong> ${totalKebutuhanTim} Tim</p>
+                <ul>
+                    ${summaryDetails.map(detail => `
+                        <li>
+                            <strong>${detail.jenisPekerjaan}</strong>: ${detail.totalUnit} Unit, Target ${detail.target} Hari
+                        </li>
+                    `).join('')}
+                </ul>
+                <p class="card-text"><i class="fas fa-layer-group"></i> <strong>Total Semua Unit:</strong> ${totalUnitSemuaPekerjaan} Unit</p>
+            </div>
+        </div>
+    `;
+}
+
+
+
+            
+        
     </script>
 </body>
 </html>
