@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png">
     <title>Hitung Volume, Durasi, dan Kebutuhan Tim</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-                body {
+        body {
             background-color: #f4f4f4;
-            background-image: url('background.jpg'); /* Ganti dengan URL gambar latar belakang */
+            background-image: url('background.jpg'); /* Ganti dengan URL gambar latar belakang Anda */
             background-size: cover;
             background-attachment: fixed;
         }
-
         .container {
             margin-top: 50px;
             background: rgba(255, 255, 255, 0.9);
@@ -29,108 +29,38 @@
             font-weight: bold;
             color: #333;
         }
-        .result {
-            margin-top: 20px;
-            text-align: center;
-            font-weight: bold;
-            animation: fadeIn 0.5s;
-        }
-        table {
-            margin-top: 20px;
+        .job-form {
+            margin-bottom: 20px;
             padding: 15px;
+            border: 1px solid #ddd;
             border-radius: 10px;
+            background-color: #06aef0;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        .btn-primary {
-            background-color: #007bff; /* Warna tombol */
-            border-color: #007bff;
+        .btn-primary, .btn-success {
+            margin-top: 10px;
         }
-        .btn-primary:hover {
-            background-color: #0056b3; /* Warna saat hover */
-            border-color: #0056b3;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .alert {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-light" style="background-color: rgba(255, 255, 255, 0);">
-    <a class="navbar-brand" href="#">
-        <img src="logo.jpg" width="200" height="100" class="d-inline-block align-top" alt="Logo">
-    </a>
-</nav>
-
-
+    <div class="logoimg">
+        <img src="logo.png" style="width: 250px; height: auto;">
+    </div>
     <div class="container">
         <h2>Calculator Projek</h2>
-        <p class="text-center">Masukkan dimensi dan informasi proyek Anda di bawah ini untuk menghitung volume, durasi, dan kebutuhan tim.</p>
-        <form id="volumeForm">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="panjang"><i class="fas fa-arrows-alt"></i> Panjang (m):</label>
-                    <input type="number" class="form-control" id="panjang" name="panjang" required>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="manpower"><i class="fas fa-users"></i> Team per Unit:</label>
-                    <input type="number" class="form-control" id="manpower" name="manpower" required>
-                </div>
-                
+        <p class="text-center">Tools untuk menghitung kebutuhan team perhari sesuai target dan kebutuhan team anda.</p>
+        <form id="mainForm">
+            <div id="formContainer">
+                <!-- Form pekerjaan pertama akan ditambahkan secara dinamis melalui JavaScript -->
             </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="tinggi"><i class="fas fa-arrows-alt"></i> Tinggi (m):</label>
-                    <input type="number" class="form-control" id="tinggi" name="tinggi" required>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="totalUnit"><i class="fas fa-th"></i> Total Unit:</label>
-                    <input type="number" class="form-control" id="totalUnit" name="totalUnit" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="lebar"><i class="fas fa-arrows-alt"></i> Lebar (m):</label>
-                    <input type="number" class="form-control" id="lebar" name="lebar" required>
-                </div>
-                
-                <div class="form-group col-md-6">
-                    <label for="target"><i class="fas fa-calendar-alt"></i> Target Penyelesaian:</label>
-                    <input type="number" class="form-control" id="target" name="target" required>
-                </div>
-            </div>
-
-            <button type="button" class="btn btn-primary btn-block" onclick="hitungVolumeDanDurasi()">Hitung</button>
+            <button type="button" class="btn btn-outline-success" onclick="hitungSemua()">Success</button>
+            <button type="button" class="btn btn-outline-primary" onclick="tambahForm()">Tambah pekerjaan</button>
         </form>
 
-        <div class="result" id="result"></div>
-
-        <table class="table table-bordered" id="resultTable" style="display:none;">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Hasil</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Meter Lari</td>
-                    <td id="volumeResult"></td>
-                </tr>
-                <tr>
-                    <td>Target waktu (hari)</td>
-                    <td id="targetResult"></td>
-                </tr>
-                <tr>
-                    <td>Kebutuhan Tim per Hari</td>
-                    <td id="kebutuhanTimResult"></td>
-                </tr>
-                <tr>
-                    <td>Total Unit</td>
-                    <td id="totalUnitResult"></td>
-                </tr>
-            </tbody>
-        </table>
+        <div id="resultContainer"></div>
     </div>
 
     <!-- Bootstrap JS and dependencies -->
@@ -139,37 +69,144 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
-        function hitungVolumeDanDurasi() {
-    const panjang = parseFloat(document.getElementById('panjang').value);
-    const lebar = parseFloat(document.getElementById('lebar').value);
-    const tinggi = parseFloat(document.getElementById('tinggi').value);
-    const manpower = parseFloat(document.getElementById('manpower').value);
-    const totalUnit = parseFloat(document.getElementById('totalUnit').value);
-    const target = parseFloat(document.getElementById('target').value);
+        let formCount = 0; // Untuk melacak jumlah form
+
+        function tambahForm() {
+            formCount++;
+
+            const formContainer = document.getElementById('formContainer');
+
+            // Membuat elemen form baru
+            const newForm = document.createElement('div');
+            newForm.classList.add('job-form');
+            newForm.setAttribute('id', `form-${formCount}`);
+            newForm.innerHTML = `
+                <h4>Pekerjaan ${formCount}</h4>
+                <div class="form-group">
+                    <label for="jenisPekerjaan-${formCount}"><i class="fas fa-tasks"></i> Jenis Pekerjaan:</label>
+                    <select class="form-control" id="jenisPekerjaan-${formCount}" name="jenisPekerjaan-${formCount}" required>
+                        <option value="Laminate Floor">Laminate Floor</option>
+                        <option value="Kitchen">Kitchen</option>
+                        <option value="Wardrobe">Wardrobe</option>
+                        <option value="Entertainment">Entertainment</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="panjang-${formCount}">Panjang (m):</label>
+                        <input type="number" class="form-control" id="panjang-${formCount}" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="lebar-${formCount}">Lebar (m):</label>
+                        <input type="number" class="form-control" id="lebar-${formCount}" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="tinggi-${formCount}">Tinggi (m):</label>
+                        <input type="number" class="form-control" id="tinggi-${formCount}" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="manpower-${formCount}">Team per Unit:</label>
+                        <input type="number" class="form-control" id="manpower-${formCount}" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="totalUnit-${formCount}">Total Unit:</label>
+                        <input type="number" class="form-control" id="totalUnit-${formCount}" required>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="target-${formCount}">Target Penyelesaian (hari):</label>
+                        <input type="number" class="form-control" id="target-${formCount}" required>
+                    </div>
+                </div>
+            `;
+            formContainer.appendChild(newForm);
+        }
+
+        function hitungSemua() {
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = ''; // Bersihkan hasil sebelumnya
+
+            for (let i = 1; i <= formCount; i++) {
+                const jenisPekerjaan = document.getElementById(`jenisPekerjaan-${i}`).value;
+                const panjang = parseFloat(document.getElementById(`panjang-${i}`).value);
+                const lebar = parseFloat(document.getElementById(`lebar-${i}`).value);
+                const tinggi = parseFloat(document.getElementById(`tinggi-${i}`).value);
+                const manpower = parseFloat(document.getElementById(`manpower-${i}`).value);
+                const totalUnit = parseFloat(document.getElementById(`totalUnit-${i}`).value);
+                const target = parseFloat(document.getElementById(`target-${i}`).value);
+
+                // Validasi input
+                if (panjang <= 0 || lebar <= 0 || tinggi <= 0 || manpower <= 0 || totalUnit <= 0 || target <= 0) {
+                    alert(`Form ${i}: Mohon masukkan angka positif untuk semua nilai.`);
+                    continue;
+                }
+
+                let volume = 0, durasi = 0, kebutuhanTimPerHari = 0;
+
+                // Logika perhitungan berdasarkan jenis pekerjaan
+                switch (jenisPekerjaan) {
+                    case "Laminate Floor":
+                        volume = (panjang * lebar).toFixed(2); // Volume per unit
+                        durasi = Math.ceil(volume / (manpower * 7)); // Durasi per unit
+                        durasiNormal = Math.ceil(totalUnit * durasi); // Total durasi untuk semua unit
+                        kebutuhanTimPerHari = Math.ceil(durasiNormal / target); // Tim per hari
+                        totalVolume = Math.ceil(volume * totalUnit).toFixed(2); // Total volume semua unit
+                        break;
+
+                    case "Kitchen":
+                        volume = (panjang - lebar + tinggi).toFixed(2);
+                        durasi = Math.ceil(volume / (manpower * 1.5));
+                        durasiNormal = Math.ceil(totalUnit * durasi);
+                        kebutuhanTimPerHari = Math.ceil(durasiNormal / target);
+                        totalVolume = Math.ceil(volume * totalUnit).toFixed(2);
+                        break;
+
+                    case "Wardrobe":
+                        volume = (panjang * tinggi * lebar).toFixed(2);
+                        durasi = Math.ceil(volume / (manpower * 1.5));
+                        durasiNormal = Math.ceil(totalUnit * durasi);
+                        kebutuhanTimPerHari = Math.ceil(durasiNormal / target);
+                        totalVolume = Math.ceil(volume * totalUnit).toFixed(2);
+                        break;
+
+                    case "Entertainment":
+                        volume = ((panjang - lebar + tinggi) * 1.2).toFixed(2);
+                        durasi = Math.ceil(volume / (manpower * 1.5));
+                        durasiNormal = Math.ceil(totalUnit * durasi);
+                        kebutuhanTimPerHari = Math.ceil(durasiNormal / target);
+                        totalVolume = Math.ceil(volume * totalUnit).toFixed(2);
+                        break;
+
+                    default:
+                        alert(`Form ${i}: Jenis pekerjaan tidak valid!`);
+                        continue;
+                }
 
 
-    // Menghitung volume
-    const volume = (panjang - lebar + tinggi).toFixed(2);
+                // Tambahkan hasil ke dalam container
+                resultContainer.innerHTML += `
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">Hasil Pekerjaan ${i}</h5>
+                            <p class="card-text"><i class="fas fa-tools"></i> <strong>Jenis Pekerjaan:</strong> ${jenisPekerjaan}</p>
+                            <p class="card-text ${volume > 100 ? 'text-danger' : 'text-success'}">
+                                <i class="fas fa-cube"></i> <strong>Volume per Unit:</strong> ${volume} m³
+                            </p>
+                            <p class="card-text text-info">
+                                <i class="fas fa-layer-group"></i> <strong>Total Volume:</strong> ${totalVolume} m³
+                            </p>
+                            <p class="card-text ${target > 10 ? 'text-warning' : 'text-success'}">
+                                <i class="fas fa-calendar-alt"></i> <strong>Target Penyelesaian:</strong> ${target} Hari
+                            </p>
+                            <p class="card-text"><i class="fas fa-users"></i> <strong>Kebutuhan Tim per Hari:</strong> ${kebutuhanTimPerHari} Tim</p>
+                            
+                        </div>
+                    </div>
+                `;
 
-    // Menghitung durasi
-    const durasi = Math.ceil(volume / (manpower *1,5 )); // Durasi (Volume / Manpower) dibulatkan ke atas
-
-    // Menghitung total waktu
-    const totalWaktu = Math.ceil(totalUnit * durasi); // Total waktu (Total Unit * Durasi) dibulatkan ke atas
-
-    // Menghitung kebutuhan tim per hari
-    const kebutuhanTimPerHari = Math.ceil(totalWaktu / target); // Kebutuhan Tim Per Hari dibulatkan ke atas
-
-    // Menampilkan hasil di tabel
-    document.getElementById('volumeResult').innerText = volume + ' Meter Lari';
-    document.getElementById('targetResult').innerText = target + ' Hari'; 
-    document.getElementById('kebutuhanTimResult').innerText = kebutuhanTimPerHari + ' Team';
-    document.getElementById('totalUnitResult').innerText= totalUnit + ' Unit'
-
-    // Menampilkan tabel hasil
-    document.getElementById('resultTable').style.display = 'table';
-}
-
+            }
+        }
     </script>
 </body>
 </html>
